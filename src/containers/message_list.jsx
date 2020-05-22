@@ -8,11 +8,11 @@ import { fetchMessages } from '../actions/index';
 
 class MessageList extends Component {
   componentWillMount() {
-    this.props.fetchMessages();
+    this.fetchMessages();
   }
 
   componentDidMount() {
-    this.refresh = setInterval(this.fetchMessages, 5000);
+    this.refresher = setInterval(this.fetchMessages, 5000);
   }
 
   componentDidUpdate() {
@@ -20,20 +20,23 @@ class MessageList extends Component {
   }
 
   componentWillUnmount() {
-    clearInterval(this.refresh);
+    clearInterval(this.refresher);
   }
 
   fetchMessages = () => {
-    this.props.fetchMessages();
+    this.props.fetchMessages(this.props.selectedChannel);
   }
 
   render() {
     return (
-      <div className="right-container">
+      <div className="my-container">
+        <div className="channel-title">
+          <span>Channel {this.props.selectedChannel}</span>
+        </div>
         <div className="message-list" ref={(list) => { this.list = list; }}>
           {this.props.messages.map((message) => {
             return (
-              <Message message={message} key={message.created_at} />
+              <Message message={message} key={message.id} />
             );
           })}
         </div>
@@ -54,7 +57,8 @@ function mapDispatchToProps(dispatch) {
 
 function mapStateToProps(state) {
   return {
-    messages: state.messages
+    messages: state.messages,
+    selectedChannel: state.selectedChannel
   };
 }
 
